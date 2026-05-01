@@ -1,9 +1,9 @@
 // src/services/embedding.service.ts
-
+import {EMBEDDING_MODEL} from '../utils/constants'
 import { OpenAIEmbeddings } from "@langchain/openai";
 
 const embeddings = new OpenAIEmbeddings({
-  model: "text-embedding-3-small",
+  model: EMBEDDING_MODEL,
 });
 
 export async function embedText(text: string): Promise<number[]> {

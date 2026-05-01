@@ -3,11 +3,12 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import { Express } from 'express';
+import { NODE_ENV, PORT } from "./utils/constants";
+
 const app = express();
-const NODE_ENV:string = "dev"
-const PORT:number = 4000
+
 app.use(express.json());
-// app.use(morgan(NODE_ENV));
+app.use(morgan(NODE_ENV));
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
