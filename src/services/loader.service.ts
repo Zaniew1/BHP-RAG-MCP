@@ -3,18 +3,18 @@ import path from "path";
 import pdf from 'pdf-parse';
 
 export interface LoaderInterface {
-    parseDocuments():Promise<string>
+    parseDocuments(folderPath:string):Promise<string>
 }
 
 export class Loader implements LoaderInterface{
-    constructor(private folderPath:string){}
-    public async parseDocuments(): Promise<string> {
-        const files = await fs.readdir(this.folderPath);
+    constructor(){}
+    public async parseDocuments(folderPath:string): Promise<string> {
+        const files = await fs.readdir(folderPath);
 
         const results: string[] = [];
 
         for (const file of files) {
-            const fullPath = path.join(this.folderPath, file);
+            const fullPath = path.join(folderPath, file);
             const ext = path.extname(file).toLowerCase();
 
             try {

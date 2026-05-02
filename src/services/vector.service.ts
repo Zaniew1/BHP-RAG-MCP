@@ -19,7 +19,7 @@ export interface VectorDBInterface{
     searchSimilarChunks(embedding: number[],  limit: number): void;
 }
 
-class PrismaVector implements VectorDBInterface {
+export class PrismaVector implements VectorDBInterface {
 
     async storeChunk({
         documentId,
@@ -53,7 +53,7 @@ class PrismaVector implements VectorDBInterface {
     }
 }
 
-class VectorDB{
+export class VectorDB{
     constructor(private dbInstance : VectorDBInterface){
     }
     storeChunk(params: StoreChunkParams){
@@ -64,5 +64,3 @@ class VectorDB{
     }
 
 }
-const prismaVector = new PrismaVector();
-export const vectordb = new VectorDB(prismaVector)

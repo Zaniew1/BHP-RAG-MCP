@@ -1,23 +1,42 @@
-// src/services/embedding.service.ts
-// import {EMBEDDING_MODEL} from '../utils/constants'
-// import { OpenAIEmbeddings } from "@langchain/openai";
 
-// const embeddings = new OpenAIEmbeddings({
-//   model: EMBEDDING_MODEL,
-// });
+import {EMBEDDING_MODEL} from '../utils/constants.ts'
+import { OpenAIEmbeddings } from "@langchain/openai";
 
-// export async function embedText(text: string): Promise<number[]> {
-//   if (!text.trim()) {
-//     throw new Error("Cannot embed empty text");
-//   }
+interface EmbeddingModelInterface{
+    embedText(text: string): Promise<number[]>
+    embedTexts(texts: string[]): Promise<number[][]>
+}
 
-//   return embeddings.embedQuery(text);
-// }
+export class EmbeddingClass implements EmbeddingModelInterface{
+    constructor(private embedModel : EmbeddingModelInterface){
+    }
+    async embedText(text: string): Promise<number[]>{
+        return await this.embedModel.embedText(text)
+    }
+    async embedTexts(texts: string[]): Promise<number[][]>{
+       return await this.embedModel.embedTexts(texts)
 
-// export async function embedTexts(texts: string[]): Promise<number[][]> {
-//   if (!texts.length) {
-//     throw new Error("No texts provided for embedding");
-//   }
+    }
+}
 
-//   return embeddings.embedDocuments(texts);
-// }
+
+export class OpenAiEmbed implements EmbeddingModelInterface{
+    private model = new OpenAIEmbeddings({
+        model: EMBEDDING_MODEL,
+    });
+    async embedText(text: string): Promise<number[]> {
+        if (!text.trim()) {
+            throw new Error("Cannot embed empty text");
+        }
+
+        return this.model.embedQuery(text);
+    }
+
+    async embedTexts(texts: string[]): Promise<number[][]> {
+        if (!texts.length) {
+            throw new Error("No texts provided for embedding");
+        }
+
+        return this.model.embedDocuments(texts);
+    }
+}

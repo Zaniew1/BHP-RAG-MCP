@@ -60,3 +60,47 @@
 //     contextChunks: similarChunks.length,
 //   };
 // }
+
+import {Loader, LoaderInterface} from "./Loader.service.ts"
+import {EmbeddingClass, OpenAiEmbed } from "./embedding.service.ts";
+import {VectorDB,PrismaVector, VectorDBInterface} from '../services/vector.service.ts'
+class RAG{
+    constructor(private embeddModel: any, private vectorDb:VectorDBInterface, private docsLoader:LoaderInterface){}
+    public startPreprocessing(folderPath:string): void {
+        this.loadDocuments(folderPath);
+        this.chunkDocuments();
+        this.embeddDocuments();
+        this.storeEmbeddedDocumentsInVectorDb();
+    }
+    public augmentPrompt(prompt: string): string {
+        this.embeddPrompt()
+        this.findPromptSimilarities()
+        return this.enrichPromptWithContext()
+    }
+    private loadDocuments(folderPath:string): void {
+        this.docsLoader.parseDocuments(folderPath)
+    }
+    private chunkDocuments(): void {}
+    private embeddDocuments(): void {
+        console.log(this.embeddModel)
+    }
+    private storeEmbeddedDocumentsInVectorDb(): void {
+        console.log(this.vectorDb)
+    }
+    private embeddPrompt(): void {}
+    private findPromptSimilarities(): void {}
+    private enrichPromptWithContext(): string {return '';}
+
+    
+}
+const prismaVector = new PrismaVector();
+const vectordb = new VectorDB(prismaVector);
+
+const loader = new Loader("src\documents");
+
+const openAiEmbedding = new OpenAiEmbed();
+const embedding = new EmbeddingClass(openAiEmbedding)
+
+const rag = new RAG(embedding, vectordb, loader);
+
+console.log(rag.startPreprocessing());
