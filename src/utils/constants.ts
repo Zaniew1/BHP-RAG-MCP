@@ -17,8 +17,9 @@ export const getEnv = (key: string, defaultVal?: string): string => {
 };
 export const NODE_ENV = getEnv('NODE_ENV', 'dev');
 export const PORT = getEnv('PORT', '5000');
-export const EMBEDDING_MODEL = getEnv('EMBEDDING_MODEL', 'text-embedding-3-small');=
+export const EMBEDDING_MODEL = getEnv('EMBEDDING_MODEL', 'text-embedding-3-small');
+export const LLM_MODEL = getEnv('EMBEDDING_MODEL', 'gpt-4o-mini');
 
 export const APP_VERSION = getEnv('APP_VERSION', 'v1.1.1');
 export const APP_ORIGIN = getEnv('APP_ORIGIN', 'http://localhost');
-export const DB_PASS = getEnv('DB_PASS');
+export const DATABASE_URL = getEnv('DATABASE_URL');

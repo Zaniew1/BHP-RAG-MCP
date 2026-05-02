@@ -1,5 +1,3 @@
-// src/loaders/index.ts
-
 import path from "path";
 import { loadTxt } from "./txt.loader";
 import { loadMarkdown } from "./markdown.loader";

@@ -1,5 +1,3 @@
-// src/loaders/markdown.loader.ts
-
 import fs from "fs/promises";
 
 /**

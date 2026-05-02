@@ -1,7 +1,6 @@
-// src/loaders/pdf.loader.ts
 
 import fs from "fs/promises";
-import pdfParse from "pdf-parse";
+import * as pdfParse from "pdf-parse";
 
 /**
  * Wymaga:

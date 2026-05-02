@@ -1,9 +1,9 @@
 // src/services/llm.service.ts
 
 import { ChatOpenAI } from "@langchain/openai";
-
+import { LLM_MODEL } from "../utils/constants";
 const llm = new ChatOpenAI({
-  model: "gpt-4o-mini",
+  model: LLM_MODEL,
   temperature: 0.2,
 });
 

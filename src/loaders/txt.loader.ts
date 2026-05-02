@@ -1,5 +1,3 @@
-// src/loaders/txt.loader.ts
-
 import fs from "fs/promises";
 
 export async function loadTxt(filePath: string): Promise<string> {
