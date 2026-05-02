@@ -5,8 +5,18 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
 model Document {
-  id   Int    @id @default(autoincrement())
-  name String
+  id      Int @id @default(autoincrement())
+  title   String
+  content String
+  chunks  DocumentChunk[]
+  sourcePath String
+}
+model DocumentChunk {
+  id         Int @id @default(autoincrement())
+  documentId Int
+  content    String
+  chunkIndex Int
+  embedding  Unsupported("vector")
+  document   Document @relation(fields: [documentId], references: [id])
 }

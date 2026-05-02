@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/rag_db
+    depends_on:
+      - postgres
+  postgres:
+    image: pgvector/pgvector:pg18-trixie
+    container_name: postgres_pgvector
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rag_db
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    command: >
+      postgres
+      -c shared_preload_libraries=vector
+
+volumes:
+  pgdata:
