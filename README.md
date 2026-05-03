@@ -67,21 +67,21 @@ npm install
 Create a `.env` file in the root directory:
 
 ```env
-# System
-NODE_ENV =dev
-PORT = 3000
-APP_VERSION = v1.1.1
-APP_ORIGIN = http://localhost
-
+#System
+NODE_ENV=dev
+PORT=3000
+APP_VERSION=v1.1.1
+APP_ORIGIN=http://localhost
 # OpenAI
+EMBEDDING_MODEL=text-embedding-3-small
 OPENAI_API_KEY=sk-...
 LLM_MODEL=gpt-4o-mini
 
 # PostgreSQL
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
-POSTGRES_DB=RAG_MCP
-POSTGRES_PORT=5433
+POSTGRES_DB=bhp_rag
+POSTGRES_PORT=5432
 
 # Prisma
 DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}
@@ -117,8 +117,12 @@ See [`endpoints.http`](./endpoints.http) for ready-to-use request examples.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/rag/load` | Load and embed documents into the vector database |
-| `POST` | `/rag/query` | Ask a question — returns an AI answer based on stored documents |
+| `POST` | `/llm/ask` | Ask a question — returns an AI answer based on stored documents |
+| `GET` | `/documents/ingest` | Load and embed documents into the vector database |
+| `GET` | `/system/health` | Check server health |
+| `POST` | `/system/chunks` | Get chunks for a given document ID |
+| `GET` | `/system/documents` | List all ingested documents |
+| `DELETE` | `/system/reset` | Delete all documents and chunks from the vector database |
 
 ---
 
@@ -172,13 +176,13 @@ BHP-RAG-MCP/
 
 ## How it works
 
-**Document ingestion** (`/rag/load`):
-1. Load documents from the specified source path
+**Document ingestion** (`GET /documents/ingest`):
+1. Load documents from the configured source path
 2. Split each document into chunks
 3. Generate a 1536-dimension embedding for each chunk using OpenAI
 4. Store the document and all its chunks (with embeddings) in PostgreSQL
 
-**Query** (`/rag/query`):
+**Query** (`POST /llm/ask`):
 1. Embed the user's question using OpenAI
 2. Search the vector database for the 5 most similar chunks using cosine distance
 3. Inject the retrieved chunks as context into the prompt
