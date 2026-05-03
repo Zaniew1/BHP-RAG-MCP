@@ -1,51 +1,57 @@
 import fs from 'fs/promises'
 import path from "path";
 import pdf from 'pdf-parse';
+import { EmbeddedChunk } from './embedding.service';
 
 export interface LoaderInterface {
-    parseDocuments(folderPath:string):Promise<string>
+    parseDocuments(folderPath:string):Promise<DocumentLoadInterface[]>
+}
+
+export interface DocumentLoadInterface{
+    title:string, 
+    source:string, 
+    content: string
+    chunks?: EmbeddedChunk[]
 }
 
 export class Loader implements LoaderInterface{
     constructor(){}
-    public async parseDocuments(folderPath:string): Promise<string> {
+    public async parseDocuments(folderPath:string): Promise<DocumentLoadInterface[]> {
         const files = await fs.readdir(folderPath);
 
-        const results: string[] = [];
-
+        const results: DocumentLoadInterface[] = [];
         for (const file of files) {
             const fullPath = path.join(folderPath, file);
             const ext = path.extname(file).toLowerCase();
 
             try {
                 if (ext === ".txt") {
-                    results.push(await this.parseText(fullPath));
+                    const content = await this.parseText(fullPath);
+                    results.push({title:file, content, source:fullPath});
                 }
 
                 if (ext === ".md") {
-                    results.push(await this.parseMd(fullPath));
+                    const content = await this.parseMd(fullPath);
+                    results.push({title:file, content, source:fullPath});
                 }
 
                 if (ext === ".pdf") {
-                    results.push(await this.parsePDF(fullPath));
+                    const content =  await this.parsePDF(fullPath)
+                    results.push({title:file, content, source:fullPath});
                 }
             } catch (err) {
                 console.error(`Failed to parse ${file}:`, err);
             }
         }
-
-        return results.join("\n\n");
+        return results;
     }
-    private async parsePDF(filePath: string): Promise<string |  any>  {
-        const buffer = await fs.readFile(filePath);
-        try{
-            await pdf(buffer).then(result => {
-                console.log(result.text)
-                return result.text
-            }
-        );
-        }catch(e: unknown){throw Error("BŁAD")}
-
+    private async parsePDF(filePath: string): Promise<string>  {
+        try {
+            const buffer = await fs.readFile(filePath);
+            const result = await pdf(buffer);
+            return result.text;
+        }
+        catch(e: unknown){throw Error("BŁAD")}
     }
     private async parseText(filePath: string): Promise<string> {
         const content = await fs.readFile(filePath, "utf-8");

@@ -19,6 +19,8 @@ app.use(
 
 app.use(cookieParser());
 
+import { rag } from "./services/rag.service";
+console.log(rag.startPreprocessing("src/documents"));
 
 export const startServer = async (application: Express) => {
     application.listen(PORT, async () => {

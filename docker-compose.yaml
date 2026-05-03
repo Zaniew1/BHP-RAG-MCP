@@ -1,33 +1,15 @@
-version: "3.9"
-
 services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
+  db:
+    image: pgvector/pgvector:pg17 # PostgreSQL with pgvector support
+    container_name: pgvector-db
+    restart: always
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/rag_db
-    depends_on:
-      - postgres
-  postgres:
-    image: pgvector/pgvector:pg18-trixie
-    container_name: postgres_pgvector
-    restart: unless-stopped
-
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: rag_db
-
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5433:5432"
-
+      - "${POSTGRES_PORT}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-
-    command: >
-      postgres
-      -c shared_preload_libraries=vector
-
+      - postgres_data:/var/lib/postgresql/data
 volumes:
-  pgdata:
+  postgres_data:

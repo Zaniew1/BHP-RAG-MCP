@@ -23,3 +23,4 @@ export const LLM_MODEL = getEnv('EMBEDDING_MODEL', 'gpt-4o-mini');
 export const APP_VERSION = getEnv('APP_VERSION', 'v1.1.1');
 export const APP_ORIGIN = getEnv('APP_ORIGIN', 'http://localhost');
 export const DATABASE_URL = getEnv('DATABASE_URL');
+export const OPEN_AI_API_KEY = getEnv('OPEN_AI_API_KEY');

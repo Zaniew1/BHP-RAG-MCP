@@ -1,5 +1,3 @@
-// src/utils/logger.ts
-
 type LogLevel = "info" | "warn" | "error" | "debug";
 
 function formatMessage(level: LogLevel, message: string, meta?: unknown) {

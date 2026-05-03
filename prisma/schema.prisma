@@ -1,22 +1,26 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"] 
 }
 
 datasource db {
   provider = "postgresql"
+  extensions = [pgvector(map: "vector", schema: "public")]
 }
 model Document {
   id      Int @id @default(autoincrement())
   title   String
   content String
   chunks  DocumentChunk[]
+  createdAt DateTime @default(now())
   sourcePath String
 }
 model DocumentChunk {
   id         Int @id @default(autoincrement())
   documentId Int
   content    String
-  chunkIndex Int
-  embedding  Unsupported("vector")
+  chunkIndex Int 
+  createdAt DateTime @default(now())
+  embedding  Unsupported("vector(1536)")
   document   Document @relation(fields: [documentId], references: [id])
 }

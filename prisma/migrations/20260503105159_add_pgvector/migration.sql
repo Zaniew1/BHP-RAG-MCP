@@ -1,13 +1,15 @@
-/*
-  Warnings:
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "vector" WITH SCHEMA "public";
 
-  - You are about to drop the column `chunkIndex` on the `Document` table. All the data in the column will be lost.
-  - You are about to drop the column `embedding` on the `Document` table. All the data in the column will be lost.
+-- CreateTable
+CREATE TABLE "Document" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "sourcePath" TEXT NOT NULL,
 
-*/
--- AlterTable
-ALTER TABLE "Document" DROP COLUMN "chunkIndex",
-DROP COLUMN "embedding";
+    CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "DocumentChunk" (
@@ -15,7 +17,7 @@ CREATE TABLE "DocumentChunk" (
     "documentId" INTEGER NOT NULL,
     "content" TEXT NOT NULL,
     "chunkIndex" INTEGER NOT NULL,
-    "embedding" TEXT NOT NULL,
+    "embedding" vector(1536) NOT NULL,
 
     CONSTRAINT "DocumentChunk_pkey" PRIMARY KEY ("id")
 );
