@@ -1,0 +1,31 @@
+# All api requests for RAG system
+
+
+### use RAG system
+POST http://localhost:3000/llm/ask
+Content-Type: application/json
+
+{
+    "question": "Jakie wykształcenie ma Mateusz Zaniewski?"
+}
+
+### ingest documents for RAG system
+GET http://localhost:3000/documents/ingest
+
+### Check health
+GET http://localhost:3000/system/health
+
+
+### get chunks of document
+POST http://localhost:3000/system/chunks
+Content-Type: application/json
+
+{
+    "id": 52
+}
+
+### get all documents
+GET http://localhost:3000/system/documents
+
+### Delete documents in vector database
+DELETE http://localhost:3000/system/reset
