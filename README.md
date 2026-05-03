@@ -67,6 +67,12 @@ npm install
 Create a `.env` file in the root directory:
 
 ```env
+# System
+NODE_ENV =dev
+PORT = 3000
+APP_VERSION = v1.1.1
+APP_ORIGIN = http://localhost
+
 # OpenAI
 OPENAI_API_KEY=sk-...
 LLM_MODEL=gpt-4o-mini
@@ -74,8 +80,8 @@ LLM_MODEL=gpt-4o-mini
 # PostgreSQL
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
-POSTGRES_DB=bhp_rag
-POSTGRES_PORT=5432
+POSTGRES_DB=RAG_MCP
+POSTGRES_PORT=5433
 
 # Prisma
 DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}
