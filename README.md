@@ -1,4 +1,4 @@
-# BHP-RAG-MCP
+# BHP-RAG
 
 A **Retrieval-Augmented Generation (RAG)** system built with TypeScript, designed to answer questions based on your own documents. The system loads documents, splits them into chunks, generates vector embeddings, stores them in a PostgreSQL database with pgvector, and uses OpenAI to answer user queries enriched with relevant context.
 
