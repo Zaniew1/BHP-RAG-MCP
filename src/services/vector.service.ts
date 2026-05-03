@@ -7,23 +7,27 @@ import { DATABASE_URL } from "../utils/constants";
 const adapter = new PrismaPg({ connectionString: DATABASE_URL });
 export const prisma = new PrismaClient({ adapter });
 
-interface StoreChunkParams {
-  documentId:number
-  content: string;
-  embedding: number[];
-  chunkIndex: number;
+export interface StoreChunkParams {
+    documentId:number
+    content: string;
+    embedding: number[];
+    chunkIndex: number;
 }
 interface StoreDocParams {
-  title: string;
-  content: string;
-  sourcePath: string;
+    id? : number
+    title: string;
+    content: string;
+    sourcePath: string;
 }
 
 export interface VectorDBInterface{
     storeChunk(params: StoreChunkParams): void;
     storeDoc(params: StoreDocParams): Promise<number>;
     checkDocExistance(title: string): Promise<StoreDocParams | null>;
-    searchSimilarChunks(embedding: number[],  limit: number): void;
+    searchSimilarChunks(embedding: number[],  limit: number): Promise<StoreChunkParams[]>;
+    cleanDatabase(): Promise<void>;
+    getDocuments(): Promise<StoreDocParams>;
+    getDocumentChunks(id: number): Promise<StoreChunkParams[]>;
 }
 
 export class PrismaVector implements VectorDBInterface {
@@ -56,7 +60,7 @@ export class PrismaVector implements VectorDBInterface {
     async searchSimilarChunks(
         embedding: number[],
         limit = 5
-    ) {
+    ):Promise<StoreChunkParams[]> {
     const embeddingString = `[${embedding.join(",")}]`;
 
     return prisma.$queryRawUnsafe(`
@@ -69,8 +73,19 @@ export class PrismaVector implements VectorDBInterface {
     async checkDocExistance(title:string): Promise<StoreDocParams | null>{
        return await prisma.document.findFirst({ where: { title: title } });
     }
+    async  cleanDatabase(): Promise<void>{
+        await prisma.documentChunk.deleteMany()
+        await prisma.document.deleteMany()
+    }
+    async getDocuments(): Promise<any>{
+        const documents = await prisma.document.findMany()
+        console.log(documents)
+       return documents
+    }
+    async  getDocumentChunks(id:number): Promise<any[]>{
+        return prisma.documentChunk.findMany({where: {documentId:id}})
+    }
 }
-
 
 export class VectorDB{
     constructor(private dbInstance : VectorDBInterface){
@@ -81,10 +96,19 @@ export class VectorDB{
     storeDoc(params: StoreDocParams){
         return this.dbInstance.storeDoc(params)
     }
-    searchSimilarChunks(embedding: number[],  limit: number){
+    searchSimilarChunks(embedding: number[],  limit: number = 5): Promise<StoreChunkParams[]>{
         return this.dbInstance.searchSimilarChunks(embedding, limit)
     }
     checkDocExistance(title: string){
-         return this.dbInstance.checkDocExistance(title)
+        return this.dbInstance.checkDocExistance(title)
+    }
+    cleanDatabase(): Promise<void>{
+        return this.dbInstance.cleanDatabase()
+    }
+    getDocuments(): Promise<any>{
+       return this.dbInstance.getDocuments();
+    }
+    getDocumentChunks(id:number): Promise<any[]>{
+        return this.dbInstance.getDocumentChunks(id);
     }
 }

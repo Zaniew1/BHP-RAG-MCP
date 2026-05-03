@@ -1,15 +1,21 @@
-import cookieParser from "cookie-parser";
-import express from "express";
-import morgan from "morgan";
 import cors from "cors";
-import { Express } from 'express';
-import { NODE_ENV, PORT } from "./utils/constants";
+import morgan from "morgan";
+import express from "express";
+import cookieParser from "cookie-parser";
+import llmRouter from "./routes/llm.routes";
+import systemRouter from "./routes/system.routes";
+import documentsRouter from "./routes/documents.routes";
+import { Router } from "express";
+import { NODE_ENV } from "./utils/constants";
+import { startServer } from "./config/server";
 
 const app = express();
+const router = Router();
 
 app.use(express.json());
 app.use(morgan(NODE_ENV));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
   cors({
     origin: "*",
@@ -17,25 +23,10 @@ app.use(
   })
 );
 
-app.use(cookieParser());
-
-import { rag } from "./services/rag.service";
-console.log(rag.startPreprocessing("src/documents"));
-
-export const startServer = async (application: Express) => {
-    application.listen(PORT, async () => {
-      console.log('Server running on port: ' + PORT + ' on ' + NODE_ENV + ' environment');
-      await connectToDatabase();
-    });
-};
-export const connectToDatabase = async () => {
-  try {
-   
-    console.log('Successfully connected to DB');
-  } catch (error) {
-    console.error('Could not connect to DB', error);
-  }
-};
+router.use("/documents", documentsRouter);
+router.use("/llm", llmRouter);
+router.use("/system", systemRouter);
+app.use(router);
 
 startServer(app);
 

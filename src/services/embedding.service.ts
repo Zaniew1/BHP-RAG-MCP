@@ -1,5 +1,5 @@
 
-import {EMBEDDING_MODEL, OPEN_AI_API_KEY} from '../utils/constants'
+import {EMBEDDING_MODEL, OPENAI_API_KEY} from '../utils/constants'
 import { OpenAIEmbeddings } from "@langchain/openai";
 
 interface EmbeddingModelInterface{
@@ -25,7 +25,7 @@ export class EmbeddingClass implements EmbeddingModelInterface{
 
 export class OpenAiEmbed implements EmbeddingModelInterface{
     private model = new OpenAIEmbeddings({
-        apiKey: OPEN_AI_API_KEY,
+        apiKey: OPENAI_API_KEY,
         model: EMBEDDING_MODEL,
     });
     async embedText(text: string): Promise<number[]> {

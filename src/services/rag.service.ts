@@ -63,30 +63,41 @@
 
 import { DocumentLoadInterface, Loader, LoaderInterface} from "./loader.service"
 import {EmbeddedChunk, EmbeddingClass, OpenAiEmbed } from "./embedding.service";
-import {VectorDB,PrismaVector, VectorDBInterface, prisma} from '../services/vector.service'
-class RAG{
+import {VectorDB,PrismaVector, VectorDBInterface, prisma, StoreChunkParams} from '../services/vector.service'
+import { LLM } from "./llm.service";
+export interface RagInterface{
+    augmentPrompt(prompt: string): Promise<string>
+    ingestDocuments(folderPath:string): Promise<void> 
+}
+
+class RAG implements RagInterface{
     private readonly CHUNK_SIZE = 100; 
     private readonly OVERLAP = 15;  
     constructor(private embeddModel: any, private vectorDb:VectorDBInterface, private docsLoader:LoaderInterface){}
-    public async  startPreprocessing(folderPath:string): Promise<void> {
+    public async  ingestDocuments(folderPath:string): Promise<void> {
         try{
             const documentsText = await this.loadDocuments(folderPath);
             const documentsTextWithChunks =  this.chunkDocuments(documentsText);
             const documentsTextWithEmbeddedChunks = await this.embeddDocuments(documentsTextWithChunks);
             await this.storeInVectorDb(documentsTextWithEmbeddedChunks);
-            // const chunks = await prisma.$queryRaw<{ id: number; embedding: string }[]>`
-            //         SELECT id, embedding::text FROM "DocumentChunk"
-            //     `;
-            // console.log(chunks[0])
         }catch(e){
             throw Error('Nie udało się')
         }
     }
-    public augmentPrompt(prompt: string): string {
-        this.embeddPrompt()
-        this.findPromptSimilarities()
-        return this.enrichPromptWithContext()
+    public async augmentPrompt(prompt: string): Promise<string> {
+        const embeddedPrompt = await this.embeddPrompt(prompt)
+        const similarChunks = await this.findPromptSimilarities(embeddedPrompt)
+        const context = similarChunks.map((chunk) => chunk.content).join("\n\n");
+        return context;
     }
+    private async embeddPrompt(prompt: string): Promise<number[]> {
+       return await this.embeddModel.embedText(prompt);
+    }
+    private async findPromptSimilarities(embeddedPrompt: number[]): Promise<StoreChunkParams[]> {
+        const results = await this.vectorDb.searchSimilarChunks(embeddedPrompt, 5)
+        return results;
+    }
+
     private async loadDocuments(folderPath:string): Promise<DocumentLoadInterface[]> {
         return await this.docsLoader.parseDocuments(folderPath)
     }
@@ -129,6 +140,7 @@ class RAG{
         return docs;
     }
     private async storeInVectorDb(documents: DocumentLoadInterface[]): Promise<void> {
+        // zapis wszystkich dokumentów do bazy
         await Promise.all(
             documents.map(async (doc) => {
                 // zapis dokumentu głównego
@@ -155,21 +167,10 @@ class RAG{
             })
         );
     }
-    private async storeDocumentsWithContentInDB(document:DocumentLoadInterface){
-                this.vectorDb.storeDoc({
-                    title: document.title,
-                    content: document.content,
-                    sourcePath: document.source,
-                })
-    }
-    private embeddPrompt(): void {}
-    private findPromptSimilarities(): void {}
-    private enrichPromptWithContext(): string {return '';}
-
-    
+       
 }
 const prismaVector = new PrismaVector();
-const vectordb = new VectorDB(prismaVector);
+export const vectordb = new VectorDB(prismaVector);
 
 const loader = new Loader();
 
