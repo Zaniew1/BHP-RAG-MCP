@@ -63,16 +63,15 @@
 
 import { DocumentLoadInterface, Loader, LoaderInterface} from "./loader.service"
 import {EmbeddedChunk, EmbeddingClass, OpenAiEmbed } from "./embedding.service";
-import {VectorDB,PrismaVector, VectorDBInterface, prisma, StoreChunkParams} from '../services/vector.service'
-import { LLM } from "./llm.service";
+import {VectorDB,PrismaVector, VectorDBInterface, StoreChunkParams} from '../services/vector.service'
 export interface RagInterface{
     augmentPrompt(prompt: string): Promise<string>
     ingestDocuments(folderPath:string): Promise<void> 
 }
 
 class RAG implements RagInterface{
-    private readonly CHUNK_SIZE = 100; 
-    private readonly OVERLAP = 15;  
+    private readonly CHUNK_SIZE = 1000; 
+    private readonly OVERLAP = 150;  
     constructor(private embeddModel: any, private vectorDb:VectorDBInterface, private docsLoader:LoaderInterface){}
     public async  ingestDocuments(folderPath:string): Promise<void> {
         try{

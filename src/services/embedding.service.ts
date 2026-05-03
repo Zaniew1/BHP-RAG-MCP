@@ -34,7 +34,6 @@ export class OpenAiEmbed implements EmbeddingModelInterface{
         }
         return await this.model.embedQuery(text);
     }
-
     async embedTexts(texts: string[]): Promise<EmbeddedChunk[]> {
         if (!texts.length) {
             throw new Error("No texts provided for embedding");

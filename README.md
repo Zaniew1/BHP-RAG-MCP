@@ -159,11 +159,15 @@ Similarity search uses the `<=>` (cosine distance) operator provided by pgvector
 BHP-RAG-MCP/
 ├── prisma/
 │   └── schema.prisma       # Database schema
+
 ├── src/
 │   ├── services/
 │   │   └── rag.service.ts  # Core RAG logic (embed, search, augment, answer)
 │   ├── db/
 │   │   └── vectorDb.ts     # VectorDB abstraction + PrismaVector implementation
+│   ├── documents/
+│   │   └── aaa.pdf     # Sample document that will be ingested
+│   │   └── aaa.txt     # Sample document that will be ingested
 │   └── utils/
 │       └── constants.ts    # Environment variables
 ├── docker-compose.yaml     # PostgreSQL + pgvector container
